@@ -25,20 +25,26 @@
 import os
 import json
 import platform
-import sys
 from vars import Import, Export
 
 '''RT-Thread environment sdk setting'''
 
 
+class MenuConfigArgs:
+    menuconfig_fn = False
+    menuconfig_g = False
+    menuconfig_silent = False
+    menuconfig_setting = False
+
+
 def cmd(args):
-    import menuconfig
+    from cmds import cmd_menuconfig
     from cmds.cmd_package import list_packages
     from cmds.cmd_package import get_packages
     from cmds.cmd_package import package_update
 
     # change to sdk root directory
-    tools_kconfig_path = os.path.join(Import('env_root'), 'tools', 'scripts')
+    tools_kconfig_path = os.path.join(Import('env_root'), 'tools')
     beforepath = os.getcwd()
     os.chdir(tools_kconfig_path)
 
@@ -50,9 +56,9 @@ def cmd(args):
     before_bsp_root = Import('bsp_root')
     Export('bsp_root')
 
+    args = MenuConfigArgs()
     # do menuconfig
-    sys.argv = ['menuconfig', 'Kconfig']
-    menuconfig._main()
+    cmd_menuconfig.cmd(args)
 
     # update package
     package_update()
